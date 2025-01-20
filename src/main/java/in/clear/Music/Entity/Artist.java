@@ -1,21 +1,18 @@
-// src/main/java/in/clear/Music/Entity/Artist.java
 package in.clear.Music.Entity;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-
 public class Artist {
-
     private String name;
-
     private long streams;
+    private List<Song> songs;
 
-    private List<Song> songs = new ArrayList<>();
+    public Artist() {
+        this.streams = 0;
+        this.songs = new ArrayList<>();
+    }
 
     // Getters and setters
     public String getName() {
