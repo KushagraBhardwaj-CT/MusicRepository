@@ -5,9 +5,12 @@ import in.clear.Music.Entity.Playlist;
 import in.clear.Music.Entity.Song;
 import in.clear.Music.Entity.SongInfo;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -102,6 +105,26 @@ public class MusicController {
                 .orElseThrow(() -> new RuntimeException("Song not found"));
         playlist.addSong(song);
         System.out.println("Song added to playlist: " + song.getSongInfo().getName());
+    }
+
+    @PostMapping("/importPlaylist")
+    public void importPlaylist(@RequestParam("file") MultipartFile file, @RequestParam("playlistName") String playlistName) throws IOException {
+        Playlist playlist = new Playlist(playlistName);
+        playlists.add(playlist);
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] data = line.split(",");
+                String songId = data[0];
+                Song song = songs.stream()
+                        .filter(s -> s.getId().equals(songId))
+                        .findFirst()
+                        .orElseThrow(() -> new RuntimeException("Song not found: " + songId));
+                playlist.addSong(song);
+            }
+        }
+        System.out.println("Playlist imported: " + playlistName);
     }
 
     @GetMapping("/exportPlaylist")
